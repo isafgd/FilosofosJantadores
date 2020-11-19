@@ -3,9 +3,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <semaphore.h>
-#include <stdbool.h>
-#include "fcntl.h"
-#include "sys/types.h"
 
 
 #define PENSANDO 0 //O filósofo está pensando
@@ -13,6 +10,7 @@
 #define COMENDO 2 //O filósofo está comendo
 
 #define TRUE 1
+#define MAX 20
 
 void* filosofo (void* arg);
 void pensa (int i);
@@ -21,14 +19,11 @@ void pega_garfos (int i);
 void devolve_garfos (int i);
 void tentativa (int i);
 
-typedef int sem_t;
-
 int n_filosofos; //Número de filósofos
 int n_porcoes; //Número de porções
-int estado[]; //Vetor para o estado de cada filósofo
+int estado[MAX]; //Vetor para o estado de cada filósofo
 sem_t mutex; //Semáforo para regiões críticas
-sem_t sem[]; //Semáforos para os filósofos
-sem_t porções;
+sem_t sem[MAX]; //Semáforos para os filósofos
 
 //Função principal: Salva o número de filósofos e a quantidade de macarrão
 int main (){
@@ -38,9 +33,6 @@ int main (){
 	scanf ("%d", &n_filosofos);
 	printf ("Quantidade de porções de macarrão disponível: ");
 	scanf ("%d", &n_porcoes);
-
-	estado[n_filosofos]; //Vetor para o estado de cada filósofo
-	sem[n_filosofos]; //Semáforos para os filósofos
 
 	sem_init(&mutex, TRUE, 1); //Inícia o semáforo para regiões críticas
 
@@ -66,11 +58,16 @@ int main (){
 void* filosofo (void * arg){ 
 	int i = *((int *) arg);
 
-	while (n_porcoes--){
+	while (TRUE){
 		pensa(i);
-		pega_garfos(i);
-		come(i);
-		devolve_garfos(i);
+		if(n_porcoes>0){
+			n_porcoes--;
+			pega_garfos(i);
+			come(i);
+			devolve_garfos(i);
+		}else{
+			pthread_exit(NULL);
+		}
 	}
 
 	pthread_exit(NULL);
