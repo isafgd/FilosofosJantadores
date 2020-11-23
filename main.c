@@ -77,7 +77,7 @@ void* filosofo (void * arg){
 
 void pensa (int i){
 	printf ("Filósofo %d está pensando!\n", i);
-	sleep(rand() % 10); //Pensa durante um tempo entre 0 e 5 segundos
+	sleep(rand() % 10); //Pensa durante um tempo entre 0 e 10 segundos
 }
 
 void come (int i){
