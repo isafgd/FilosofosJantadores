@@ -24,6 +24,7 @@ int n_porcoes; //Número de porções
 int estado[MAX]; //Vetor para o estado de cada filósofo
 sem_t mutex; //Semáforo para regiões críticas
 sem_t sem[MAX]; //Semáforos para os filósofos
+pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
 
 //Função principal: Salva o número de filósofos e a quantidade de macarrão
 int main (){
@@ -57,12 +58,13 @@ int main (){
 //Recebe o número do filósfo (0 <= i < n_filosos)
 void* filosofo (void * arg){ 
 	int i = *((int *) arg);
-
 	while (TRUE){
 		pensa(i);
 		if(n_porcoes>0){
-			n_porcoes--;
 			pega_garfos(i);
+			pthread_mutex_lock(&m); //Garantir o acesso à variavel condicional para somento uma thread por vez
+			n_porcoes--;
+			pthread_mutex_unlock(&m);
 			come(i);
 			devolve_garfos(i);
 		}else{
